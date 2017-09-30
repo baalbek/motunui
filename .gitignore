@@ -1,4 +1,7 @@
 .gradle/
 .idea/
 dist/
+R/
+build/
+target/
 *.swp
