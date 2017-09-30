@@ -1,0 +1,11 @@
+#!/bin/bash
+
+lein compile
+
+# gradle compileJava
+
+gradle jar 
+
+cp build/libs/motunui-1.0.jar dist/
+
+exit 0

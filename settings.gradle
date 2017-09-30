@@ -1,0 +1,4 @@
+rootProject.name = 'motunui'
+includeFlat 'oahu'
+includeFlat 'ranoraraku'
+includeFlat 'vega'

@@ -1,0 +1,112 @@
+apply plugin: 'java'
+
+apply from: '../gradlecommon/depversions.gradle'
+
+group = 'rcstadheim'
+
+sourceSets {
+    main {
+        java {
+            srcDir "src/java"
+        }
+        resources {
+            srcDir "src/resources"
+        }
+        output.classesDir = 'build/classes'
+    }
+    test {
+        java {
+            srcDir "test/java"
+        }
+        resources {
+            srcDir "test/resources"
+        }
+    }
+}
+
+ext {
+    major = '1'
+    minor = '0'
+    // parentDist = '/home/rcs/opt/java/netfondsjanitor/dist'
+    parentDist = '../netfondsjanitor/dist'
+    myLibName = "netfondsjanitor-${version}.jar"
+}
+
+version = "${major}.${minor}"
+
+archivesBaseName = 'motunui'
+
+sourceCompatibility = 1.8
+
+targetCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+    maven {
+        url 'http://clojars.org/repo'
+    }
+}
+
+
+dependencies {
+    compile project(':oahu')
+    compile project(':ranoraraku')
+    runtime project(':vega')
+    //------------------- spring -------------------
+    compile "org.springframework:spring-core:$springVersion"
+    compile "org.springframework:spring-context:$springVersion"
+    compile "org.springframework:spring-aop:$springVersion"
+    //------------------- clojure-------------------
+    compile "org.clojure:clojure:$clojureVersion"
+    //------------------- diverse -------------------
+    compile "org.mybatis:mybatis:$mybatisVersion"
+    compile "junit:junit:$junitVersion"
+    compile "log4j:log4j:$log4jVersion"
+}
+
+task common << {
+    println "$springVersion"
+}
+String clazzPath() {
+    def runt = configurations.runtime.files.collect { f ->
+            f.name
+    }
+    runt.add(".")
+    runt.join(" ")
+}
+
+task printClazzPath << {
+    println clazzPath()
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'motunui.Main'
+        attributes 'Class-Path': clazzPath()
+    }
+    from ("target/classes") include "**/*.class"
+}
+
+task copydeps(type: Copy) {
+    into 'dist' from configurations.runtime
+}
+
+task setupDist << {
+    ant.symlink(resource: "../local/log4j.xml", link: "dist/log4j.xml")
+    ant.symlink(resource: "../src/resources/mybatis.conf.xml", link: "dist/mybatis.conf.xml")
+    ant.symlink(resource: "../local/netfonds-dbcp.properties", link: "dist/netfonds-dbcp.properties")
+    ant.symlink(resource: "../local/netfondsjanitor.xml", link: "dist/netfondsjanitor.xml")
+    ant.symlink(resource: "../local/runjar", link: "dist/runjar")
+}
+
+buildscript {
+    repositories {
+        mavenLocal()
+    }
+    dependencies {
+        classpath group: 'rcstadheim', name: 'palenque',
+                version: '1.0'
+    }
+}
+
+apply plugin: 'rcstadheim.palenque'

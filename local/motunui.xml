@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+    <!--
+    <bean id="downloader" class="netfondsjanitor.etrade.DummyDownloader">
+        <property name="storePath" value="/home/rcs/opt/java/netfondsjanitor/feed/2014/6/25" />
+        <property name="optionSuffix" value="15_17" />
+    </bean>
+    -->
+
+    <bean id="downloader" class="netfondsrepos.downloader.DefaultDownloader">
+        <property name="javaScriptEnabled" value="false" />
+    </bean>
+
+    <bean id="calculator" class="vega.financial.calculator.BlackScholes">
+    </bean>
+
+    <bean id="contenthandler" class="netfondsrepos.contenthandler.DefaultContentHandler">
+    </bean>
+
+    <bean id="repos" class="ranoraraku.models.impl.StockMarketReposImpl" >
+    </bean>
+
+    <bean id="etrade" class="netfondsrepos.repos.DefaultEtradeRepository">
+        <property name="downloader" ref="downloader" />
+        <property name="stockMarketRepository" ref="repos" />
+        <property name="optionCalculator" ref="calculator" />
+        <property name="contentHandler" ref="contenthandler" />
+    </bean>
+
+
+    <bean id="janitor" class="netfondsjanitor.janitors.DefaultJanitor">
+        <property name="stockMarketRepos" ref="repos" />
+        <property name="feedStoreDir" value="/home/rcs/opt/java/netfondsjanitor/feed" />
+        <property name="downloader" ref="downloader" />
+        <property name="etradeRepos" ref="etrade" />
+        <property name="calculator" ref="calculator" />
+    </bean>
+</beans>
+
+
